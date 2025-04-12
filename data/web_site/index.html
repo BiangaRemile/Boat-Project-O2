@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="style.css">
+    <title>Page Verrouillée</title>
+</head>
+
+<body>
+    <div id="content">
+        <div class="left box">
+            <div class="battery">
+                Battery: 80%
+            </div>
+            <div class="joystick-container">
+                <img src="joystick_base.png" />
+                <div id="joystick" style="position: absolute; left:32px; top:32px;">
+                    <img src="joystick_blue.png" />
+                </div>
+            </div>
+        </div>
+        <div class="center box">
+            <div class="heading">
+                North-East
+            </div>
+            <div class="more">
+                <span>Motor speed</span>
+                <span>1200 tr / s</span>
+                <span>Motor Current</span>
+                <span>3 A</span>
+            </div>
+            <div class="btns">
+                <div class="mode" id="mode">
+                    <button class="active">Forward</button>
+                    <button>Backward</button>
+                </div>
+                <button class="start" id="stop">LAUNCH</button>
+            </div>
+
+        </div>
+        <div class="right box">
+            <div class="gps">
+                <span>Lat: 64.673</span>
+                <span>Long: 16.93</span>
+            </div>
+            <div class="slider">
+                <div class="slider-container">
+                    <div class="scale">
+                        <!-- Graduations de l'échelle -->
+                        <div class="tick">100</div>
+                        <div class="tick">80</div>
+                        <div class="tick">60</div>
+                        <div class="tick">40</div>
+                        <div class="tick">20</div>
+                        <div class="tick">0</div>
+                    </div>
+                    <div class="slider-track"></div>
+                    <div class="slider-thumb" id="sliderThumb"></div>
+                </div>
+                <p>Speed <span id="value">0</span> m/s</p>
+            </div>
+        </div>
+
+        <div id="landscape-warning">
+            <p>Veuillez passer votre appareil en mode <strong>paysage</strong> pour continuer.</p>
+        </div>
+
+        <script src="script.js"></script>
+
+</body>
+
+</html>
+
+<!-- link joystik code https://www.cssscript.com/touch-joystick-controller/ -->
