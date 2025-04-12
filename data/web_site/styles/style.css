@@ -1,0 +1,273 @@
+/* ----------------------------- */
+/* 1. ROOT VARIABLES             */
+/* ----------------------------- */
+
+:root {
+    --background-color: #e6eff3; /* Defines a light blue-gray background color for consistent use across the design */
+}
+
+/* ----------------------------- */
+/* 2. GENERAL PAGE STYLING       */
+/* ----------------------------- */
+
+body {
+    margin: 0; /* Removes default margin to ensure no unwanted spacing */
+    padding: 0; /* Removes default padding */
+    overflow: hidden; /* Disables scrolling by hiding overflow content */
+    width: 100%; /* Ensures the body spans the full width of the viewport */
+    height: 100vh; /* Ensures the body spans the full height of the viewport */
+    color: black; /* Sets the default text color */
+    display: flex; /* Enables flexbox layout for centering content */
+    justify-content: center; /* Centers content horizontally */
+    align-items: center; /* Centers content vertically */
+    font-family: sans-serif; /* Sets a clean, modern font */
+    text-align: center; /* Aligns text to the center */
+}
+
+/* Landscape warning message styling */
+#landscape-warning {
+    display: none; /* Hidden by default */
+    position: absolute; /* Positions it absolutely within the viewport */
+    top: 0; /* Aligns it to the top */
+    left: 0; /* Aligns it to the left */
+    height: 100%; /* Spans the full height of the viewport */
+    background: rgba(0, 0, 0, 0.95); /* Semi-transparent black background */
+    color: #fff; /* White text for contrast */
+    font-size: 1.5em; /* Larger font size */
+    z-index: 999; /* Ensures it appears above all other elements */
+    justify-content: center; /* Centers content horizontally */
+    align-items: center; /* Centers content vertically */
+    padding: 20px; /* Adds padding around the text */
+}
+
+/* Media query for small screens */
+@media (max-height: 300px) {
+    body {
+        align-items: start; /* Aligns content to the top */
+    }
+    #content {
+        height: 200px; /* Reduces the height of the content container */
+    }
+}
+
+/* ----------------------------- */
+/* 3. MAIN CONTENT LAYOUT        */
+/* ----------------------------- */
+
+/* Main content container */
+#content {
+    display: flex; /* Uses flexbox to arrange child elements */
+    padding: 30px; /* Adds padding around the content */
+    justify-content: space-between; /* Distributes child elements evenly with space between them */
+    width: 700px; /* Sets a fixed width for the content container */
+    background: var(--background-color); /* Applies the root-defined background color */
+    border-radius: 14px; /* Rounds the corners of the container */
+}
+
+/* Box styling (used for left, center, and right sections) */
+.box {
+    display: flex; /* Uses flexbox for layout */
+    flex-direction: column; /* Stacks child elements vertically */
+    justify-content: space-between; /* Distributes child elements with space between them */
+}
+
+/* Right section gap adjustment */
+.right {
+    gap: 30px; /* Adds vertical spacing between child elements */
+}
+
+/* ----------------------------- */
+/* 4. LEFT SECTION - JOYSTICK    */
+/* ----------------------------- */
+
+.left .joystick-container {
+    width: 128px; /* Sets a fixed width for the joystick container */
+    position: relative; /* Allows positioning of child elements relative to this container */
+}
+
+/* ----------------------------- */
+/* 5. CENTER SECTION - CONTROLS  */
+/* ----------------------------- */
+
+/* Button container */
+.center .btns {
+    margin-top: 20px; /* Adds spacing above the buttons */
+    display: flex; /* Uses flexbox for layout */
+    flex-direction: column; /* Stacks buttons vertically */
+    gap: 10px; /* Adds spacing between buttons */
+}
+
+/* Styling for the "STOP" button */
+.center .btns .stop {
+    background-color: rgb(250, 154, 154); /* Light red background for the STOP state */
+}
+
+/* Styling for the "LAUNCH" button */
+.center .btns .start {
+    background-color: rgb(154, 250, 194); /* Light green background for the LAUNCH state */
+}
+
+/* General button styling */
+.center .btns button {
+    background-color: transparent; /* Transparent background by default */
+    padding: 8px; /* Adds padding inside the buttons */
+    border: 0; /* Removes borders */
+    border-radius: 10px; /* Rounds the corners of the buttons */
+    transition: linear .3s; /* Smooth transition for hover effects */
+}
+
+/* Mode selection buttons container */
+.center .mode {
+    display: flex; /* Uses flexbox for layout */
+    gap: 0; /* Removes spacing between buttons */
+    border: 2px solid #555; /* Adds a border around the container */
+    border-radius: 10px; /* Rounds the corners of the container */
+}
+
+/* Active mode button styling */
+.center .mode .active {
+    background-color: #1f5c7d; /* Dark blue background for the active button */
+    color: #fff; /* White text for contrast */
+    border-radius: 10px; /* Rounds the corners of the button */
+}
+
+/* Additional information section */
+.center .more {
+    display: flex; /* Uses flexbox for layout */
+    flex-direction: column; /* Stacks child elements vertically */
+}
+
+/* ----------------------------- */
+/* 6. RIGHT SECTION - SPEEDOMETER*/
+/* ----------------------------- */
+
+/* Speedometer container */
+.speedometer {
+    box-sizing: border-box; /* Ensures padding and borders are included in the element's dimensions */
+    width: 140px; /* Sets a fixed width */
+    height: 140px; /* Sets a fixed height */
+    border: 3px solid black; /* Adds a black border */
+    border-radius: 50%; /* Makes the speedometer circular */
+    position: relative; /* Allows positioning of child elements relative to this container */
+}
+
+/* Center point of the speedometer */
+.speedometer .center-point {
+    width: 10px; /* Sets a small width */
+    height: 10px; /* Sets a small height */
+    background-color: black; /* Black background */
+    border-radius: 50%; /* Makes it circular */
+    position: absolute; /* Positions it absolutely within the speedometer */
+    top: 62px; /* Positions it vertically */
+    left: 62px; /* Positions it horizontally */
+    z-index: 2; /* Ensures it appears above other elements */
+}
+
+/* General scale styling for the speedometer */
+.speedometer .speedometer-scale {
+    height: 120px; /* Sets a fixed height */
+    width: 5px; /* Sets a narrow width */
+    background-color: black; /* Black background */
+    position: absolute; /* Positions it absolutely within the speedometer */
+    left: 65px; /* Positions it horizontally */
+    top: 7px; /* Positions it vertically */
+    transform: rotate(-90deg); /* Rotates it to align with the speedometer */
+}
+
+/* Specific scale rotation values */
+.speedometer .speedometer-scale-1 { transform: rotate(-90deg); }
+.speedometer .speedometer-scale-2 { transform: rotate(-72deg); }
+.speedometer .speedometer-scale-3 { transform: rotate(-54deg); }
+.speedometer .speedometer-scale-4 { transform: rotate(-36deg); }
+.speedometer .speedometer-scale-5 { transform: rotate(-18deg); }
+.speedometer .speedometer-scale-6 { transform: rotate(0deg); }
+.speedometer .speedometer-scale-7 { transform: rotate(18deg); }
+.speedometer .speedometer-scale-8 { transform: rotate(36deg); }
+.speedometer .speedometer-scale-9 { transform: rotate(54deg); }
+.speedometer .speedometer-scale-10 { transform: rotate(72deg); }
+.speedometer .speedometer-scale-11 { transform: rotate(90deg); }
+
+/* Active scale styling for different speeds */
+.speedometer .speedometer-scale-1.active { background-color: black; }
+.speedometer .speedometer-scale-2.active { background-color: rgb(4, 192, 4); }
+.speedometer .speedometer-scale-3.active { background-color: rgb(12, 202, 12); }
+.speedometer .speedometer-scale-4.active { background-color: rgb(3, 255, 3); }
+.speedometer .speedometer-scale-5.active { background-color: rgb(137, 247, 137); }
+.speedometer .speedometer-scale-6.active { background-color: rgb(231, 247, 137); }
+.speedometer .speedometer-scale-7.active { background-color: rgb(250, 237, 62); }
+.speedometer .speedometer-scale-8.active { background-color: rgb(250, 221, 55); }
+.speedometer .speedometer-scale-9.active { background-color: rgb(250, 133, 55); }
+.speedometer .speedometer-scale-10.active { background-color: rgb(247, 77, 10); }
+.speedometer .speedometer-scale-11.active { background-color: rgb(247, 10, 10); }
+
+/* Central overlay to hide parts of the speedometer */
+.speedometer .speedometre-center-hide {
+    width: 100px; /* Sets a fixed width */
+    height: 100px; /* Sets a fixed height */
+    border-radius: 50%; /* Makes it circular */
+    background-color: var(--background-color); /* Matches the background color */
+    position: absolute; /* Positions it absolutely within the speedometer */
+    top: 17px; /* Positions it vertically */
+    left: 17px; /* Positions it horizontally */
+    z-index: 1; /* Ensures it appears above the scales */
+}
+
+/* Arrow container for the speedometer */
+.speedometer .arrow-container {
+    width: 60px; /* Sets a fixed width */
+    height: 60px; /* Sets a fixed height */
+    background-color: transparent; /* Transparent background */
+    position: absolute; /* Positions it absolutely within the speedometer */
+    left: 37px; /* Positions it horizontally */
+    top: 37px; /* Positions it vertically */
+    z-index: 4; /* Ensures it appears above other elements */
+}
+
+/* Wrapper for the arrow */
+.speedometer .arrow-wrapper {
+    width: 60px; /* Sets a fixed width */
+    height: 60px; /* Sets a fixed height */
+    background-color: transparent; /* Transparent background */
+    position: relative; /* Allows positioning of child elements */
+    transition: all 0.4s; /* Smooth transition for rotations */
+}
+
+/* Specific arrow rotation values */
+.speedometer .speed-0 { transform: rotate(0deg); }
+.speedometer .speed-10 { transform: rotate(18deg); }
+.speedometer .speed-20 { transform: rotate(36deg); }
+.speedometer .speed-30 { transform: rotate(54deg); }
+.speedometer .speed-40 { transform: rotate(72deg); }
+.speedometer .speed-50 { transform: rotate(90deg); }
+.speedometer .speed-60 { transform: rotate(108deg); }
+.speedometer .speed-70 { transform: rotate(126deg); }
+.speedometer .speed-80 { transform: rotate(144deg); }
+.speedometer .speed-90 { transform: rotate(162deg); }
+.speedometer .speed-100 { transform: rotate(180deg); }
+
+/* Arrow styling */
+.speedometer .arrow {
+    width: 40px; /* Sets a fixed width */
+    height: 4px; /* Sets a narrow height */
+    background-color: black; /* Black background */
+    position: absolute; /* Positions it absolutely within the wrapper */
+    left: -8px; /* Positions it horizontally */
+    top: 29px; /* Positions it vertically */
+}
+
+/* Bottom overlay to hide parts of the speedometer */
+.speedometer .speedometer-bottom-hide {
+    width: 150px; /* Sets a fixed width */
+    height: 70px; /* Sets a fixed height */
+    position: absolute; /* Positions it absolutely within the speedometer */
+    background-color: var(--background-color); /* Matches the background color */
+    z-index: 3; /* Ensures it appears above the scales */
+    top: 75px; /* Positions it vertically */
+    left: -8px; /* Positions it horizontally */
+    border-top: 1px solid black; /* Adds a border at the top */
+}
+
+.gps {
+    display: flex; /* Uses flexbox for layout */
+    flex-direction: column; /* Stacks child elements vertically */
+}

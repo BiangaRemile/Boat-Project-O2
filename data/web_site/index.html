@@ -3,74 +3,112 @@
 
 <head>
     <meta charset="UTF-8">
+    <!-- Set character encoding to UTF-8 for proper display of special characters -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="style.css">
-    <title>Page Verrouillée</title>
+    <!-- Ensure the page is responsive and fits the device width, with no zooming allowed -->
+    <link rel="stylesheet" href="styles/style.css">
+    <!-- Link to the external CSS file for styling -->
+    <title>Boat Remote</title>
+    <!-- Title of the webpage -->
 </head>
 
 <body>
+    <!-- Main content container -->
     <div id="content">
+        <!-- Left section of the layout -->
         <div class="left box">
+            <!-- Battery status display -->
             <div class="battery">
                 Battery: 80%
             </div>
+            <!-- Joystick container -->
             <div class="joystick-container">
+                <!-- Base image of the joystick -->
                 <img src="joystick_base.png" />
+                <!-- Movable part of the joystick -->
                 <div id="joystick" style="position: absolute; left:32px; top:32px;">
                     <img src="joystick_blue.png" />
                 </div>
             </div>
         </div>
+
+        <!-- Center section of the layout -->
         <div class="center box">
+            <!-- Heading/title for the center section -->
             <div class="heading">
                 North-East
             </div>
+            <!-- Additional information like motor speed and current -->
             <div class="more">
                 <span>Motor speed</span>
                 <span>1200 tr / s</span>
                 <span>Motor Current</span>
                 <span>3 A</span>
             </div>
+            <!-- Buttons for mode selection and starting -->
             <div class="btns">
+                <!-- Mode buttons (Forward/Backward) -->
                 <div class="mode" id="mode">
                     <button class="active">Forward</button>
                     <button>Backward</button>
                 </div>
+                <!-- Launch button -->
                 <button class="start" id="stop">LAUNCH</button>
             </div>
-
         </div>
+
+        <!-- Right section of the layout -->
         <div class="right box">
+            <!-- GPS coordinates display -->
             <div class="gps">
                 <span>Lat: 64.673</span>
                 <span>Long: 16.93</span>
             </div>
-            <div class="slider">
-                <div class="slider-container">
-                    <div class="scale">
-                        <!-- Graduations de l'échelle -->
-                        <div class="tick">100</div>
-                        <div class="tick">80</div>
-                        <div class="tick">60</div>
-                        <div class="tick">40</div>
-                        <div class="tick">20</div>
-                        <div class="tick">0</div>
-                    </div>
-                    <div class="slider-track"></div>
-                    <div class="slider-thumb" id="sliderThumb"></div>
+            <!-- Speedometer visualization -->
+            <div class="speedometer">
+                <!-- Center point of the speedometer -->
+                <div class="center-point"></div>
+                <!-- Hidden part of the speedometer (design purposes) -->
+                <div class="speedometre-center-hide"></div>
+                <div class="speedometer-bottom-hide">
+                    <!-- Display current speed -->
+                    <p> <span id="speed-value">0</span> m/s</p>
                 </div>
-                <p>Speed <span id="value">0</span> m/s</p>
+                <!-- Arrow container for indicating speed -->
+                <div class="arrow-container">
+                    <div class="arrow-wrapper speed-0">
+                        <div class="arrow"></div>
+                    </div>
+                </div>
+                <!-- Speedometer scale markers -->
+                <div class="speedometer-scale speedometer-scale-1 active"></div>
+                <div class="speedometer-scale speedometer-scale-2"></div>
+                <div class="speedometer-scale speedometer-scale-3"></div>
+                <div class="speedometer-scale speedometer-scale-4"></div>
+                <div class="speedometer-scale speedometer-scale-5"></div>
+                <div class="speedometer-scale speedometer-scale-6"></div>
+                <div class="speedometer-scale speedometer-scale-7"></div>
+                <div class="speedometer-scale speedometer-scale-8"></div>
+                <div class="speedometer-scale speedometer-scale-9"></div>
+                <div class="speedometer-scale speedometer-scale-10"></div>
+                <div class="speedometer-scale speedometer-scale-11"></div>
             </div>
         </div>
 
+        <!-- Warning message for landscape mode -->
         <div id="landscape-warning">
             <p>Veuillez passer votre appareil en mode <strong>paysage</strong> pour continuer.</p>
         </div>
+    </div>
 
-        <script src="script.js"></script>
+    <!-- External JavaScript files -->
+    <script src="scripts/script.js"></script>
+    <!-- Main script for functionality -->
+    <script src="scripts/websocket.js"></script>
+    <!-- WebSocket script for real-time communication -->
 
 </body>
 
 </html>
 
-<!-- link joystik code https://www.cssscript.com/touch-joystick-controller/ -->
+<!-- Link to joystick code: https://www.cssscript.com/touch-joystick-controller/ -->
