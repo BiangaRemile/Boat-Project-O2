@@ -22,15 +22,28 @@ function wsConnection(url) {
         const state = data.state; // Extract the "state" field from the message.
         const component = data.component; // Extract the "component" field from the message.
 
-        // Update the LAUNCH/STOP button based on the received state and component.
-        if (state && component === "led") {
-            stopBtn.classList.remove("start"); // Remove the "start" class.
-            stopBtn.classList.add("stop"); // Add the "stop" class.
-        } else {
-            stopBtn.classList.remove("stop"); // Remove the "stop" class.
-            stopBtn.classList.add("start"); // Add the "start" class.
+        if (component === "lat") {
+            console.log("lat", state);
+            
+            document.getElementById("lat").innerText = state
         }
-        stopBtn.innerText = state ? "STOP" : "LAUNCH"; // Update the button text accordingly.
+
+        if (component === "lon") {
+            console.log("lon", state);
+            
+            document.getElementById("lon").innerText = state
+        }
+
+        // Update the LAUNCH/STOP button based on the received state and component.
+        // if (state && component === "led") {
+        //     stopBtn.classList.remove("start"); // Remove the "start" class.
+        //     stopBtn.classList.add("stop"); // Add the "stop" class.
+        // } else {
+        //     stopBtn.classList.remove("stop"); // Remove the "stop" class.
+        //     stopBtn.classList.add("start"); // Add the "start" class.
+        // }
+        // stopBtn.innerText = state ? "STOP" : "LAUNCH"; // Update the button text accordingly.
+        
     });
 
     // Event listener for when the connection is closed.
