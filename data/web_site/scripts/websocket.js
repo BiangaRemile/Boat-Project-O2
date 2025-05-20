@@ -23,16 +23,18 @@ function wsConnection(url) {
         const component = data.component; // Extract the "component" field from the message.
 
         if (component === "lat") {
-            console.log("lat", state);
-            
             document.getElementById("lat").innerText = state
         }
 
         if (component === "lon") {
-            console.log("lon", state);
-            
             document.getElementById("lon").innerText = state
         }
+
+        if (component === "heading") {
+            document.getElementById("heading").innerText = state
+        }
+
+        console.log(data);
 
         // Update the LAUNCH/STOP button based on the received state and component.
         // if (state && component === "led") {

@@ -17,6 +17,10 @@ IPAddress create_access_point(const char *ssid, const char *password)
         while(true) {}
     }
 
-    WiFi.softAP(ssid, password); // Start the Access Point with the given SSID and password
+    WiFi.softAP(ssid, password, 1, 0, 1); // Start the Access Point with the given SSID and password
     return WiFi.softAPIP();      // Return the IP address of the Access Point
+}
+
+bool device_connected() {
+    return WiFi.softAPgetStationNum() > 0; // Check if any devices are connected to the Access Point
 }

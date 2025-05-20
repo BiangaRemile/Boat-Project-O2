@@ -15,7 +15,7 @@ public:
     }
 
     // Modified function: Waits for valid GPS data
-    bool getGPSData(double &lat, double &lon, unsigned long timeout = 10000)
+    bool getGPSData(double &lat, double &lon, unsigned long timeout = 1000)
     {
         unsigned long start = millis();
 

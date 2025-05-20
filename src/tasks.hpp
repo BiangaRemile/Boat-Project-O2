@@ -8,6 +8,9 @@
 #include <wifi.hpp>
 #include <webserver.hpp>
 #include "globals.hpp"
+#include "esp_wifi.h" // not esp_wifi_types.h only
+#include "esp_wifi_types.h"
+#include <heading.hpp>
 
 void AccessPointTask(void *pvParameters)
 {
@@ -17,12 +20,14 @@ void AccessPointTask(void *pvParameters)
 
     IPAddress local_ip = create_access_point(ssid, password); // Create the access point
 
+    pinMode(WIFI_LED, OUTPUT); // Set the WiFi LED pin as output
     Serial.print("IP Address: ");
     Serial.println(local_ip); // Print the IP address of the access point
 
     while (true)
     {
-        vTaskDelay(1000 / portTICK_PERIOD_MS); // Delay for a second
+        digitalWrite(WIFI_LED, device_connected()); // Turn on the WiFi LED
+        vTaskDelay(500 / portTICK_PERIOD_MS); // Delay for a second
     }
 }
 
@@ -33,9 +38,9 @@ void WebServerTask(void *pvParameters)
     WebServerManager server(80, "/ws"); // Create a web server on port 80 with WebSocket support
     while (true)
     {
-        double currentLat, currentLon;
+        double currentLat, currentLon, currentHeading;
 
-        // Safely read shared variables
+        // // Safely read shared variables
         if (xSemaphoreTake(gpsMutex, portMAX_DELAY) == pdTRUE)
         {
             currentLat = latitude;
@@ -43,17 +48,26 @@ void WebServerTask(void *pvParameters)
             xSemaphoreGive(gpsMutex);
         }
 
+        if (xSemaphoreTake(headingMutex, portMAX_DELAY) == pdTRUE)
+        {
+            currentHeading = heading;
+            xSemaphoreGive(headingMutex);
+        }
+
         char latStr[16]; // Buffer for "±XXX.XXXXXX" (15 chars + null terminator)
         char lonStr[16];
-        
+        char headStr[8];
+
         snprintf(latStr, sizeof(latStr), "%.6f", currentLat);
         snprintf(lonStr, sizeof(lonStr), "%.6f", currentLon);
+        snprintf(headStr, sizeof(headStr), "%.2f", currentHeading);
 
-        // Use the values (e.g., send to a web client)
-        server.socket.sendData("lat", latStr); // Send latitude to the web client
-        server.socket.sendData("lon", lonStr); // Send longitude to the web client
-        server.socket._socket.cleanupClients(); // Clean up disconnected WebSocket clients
-        vTaskDelay(1000 / portTICK_PERIOD_MS); // Delay for a second
+        // // Use the values (e.g., send to a web client)
+        server.socket.sendData("lat", latStr);  // Send latitude to the web client
+        server.socket.sendData("lon", lonStr);  // Send longitude to the web client
+        server.socket.sendData("heading", headStr); // Send heading to the web client
+        server.socket._socket.cleanupClients();     // Clean up disconnected WebSocket clients
+        vTaskDelay(1000 / portTICK_PERIOD_MS);      // Delay for a second
     }
 }
 
@@ -61,22 +75,50 @@ void GPSTask(void *pvParameters)
 {
     // Initialize GPS
     GPS gps(U1RXpin, U1TXpin, 9600); // RX=17, TX=18, 9600 baud
-    Serial.println("GPS Module Test");
 
-    if (xSemaphoreTake(gpsMutex, portMAX_DELAY) == pdTRUE)
+    while (true)
     {
-
-        while (true)
+        if (gps.getGPSData(latitude, longitude))
         {
-            if (gps.getGPSData(latitude, longitude))
+            isGPSSensor = true; // Set the GPS sensor flag to true
+            if (xSemaphoreTake(gpsMutex, portMAX_DELAY) == pdTRUE)
             {
                 xSemaphoreGive(gpsMutex); // Release the mutex after getting GPS data
             }
-            else
-            {
-            }
-            vTaskDelay(500 / portTICK_PERIOD_MS); // Delay for a second
+        } else
+        {
+            isGPSSensor = false; // Set the GPS sensor flag to false
         }
+        vTaskDelay(100 / portTICK_PERIOD_MS); // Delay for a second
+    }
+}
+
+void HeadingTask(void *pvParameters)
+{
+
+    initializationHeading();
+
+    const float alpha = 0.98;
+
+    while (true)
+    {
+        static unsigned long long lastTime = 0;
+        static float headingCal = 0;
+
+        pitchAndRoll(lastTime, headingCal, alpha);
+
+        if (headingCal < 0)
+        {
+            headingCal += 360;
+        }
+
+        // Safely update the shared heading variable
+        if (xSemaphoreTake(headingMutex, portMAX_DELAY) == pdTRUE)
+        {
+            heading = headingCal;
+            xSemaphoreGive(headingMutex);
+        }
+        vTaskDelay(100 / portTICK_PERIOD_MS); 
     }
 }
 

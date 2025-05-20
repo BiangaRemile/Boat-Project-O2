@@ -11,7 +11,18 @@
 class DigitalCompass
 {
 public:
-  void begin() { compass.init(); };
+  DigitalCompass()
+  {
+
+    compass.init(); // reset sensor
+
+    // Configurer le capteur en ±8 gauss
+    Wire.beginTransmission(0x0D);
+    Wire.write(0x09);
+    Wire.write(0x1D); // 8G, ODR 200Hz, OSR 512, mode continu
+    Wire.endTransmission();
+
+  } // Constructor initializes the compass
 
   /**
    * @brief Reads the current heading from the compass and stores the X, Y, and Z axis values.
@@ -26,10 +37,45 @@ public:
    */
   void getValues(float &x, float &y, float &z)
   {
-    compass.read();     // Read the latest data from the compass
-    x = compass.getX(); // Get the X-axis value
-    y = compass.getY(); // Get the Y-axis value
-    z = compass.getZ(); // Get the Z-axis value (FIXED: Original code incorrectly assigned 'y' twice)
+    compass.read(); // Read the latest data from the compass
+
+    x = compass.getX();
+    y = compass.getY();
+    z = compass.getZ();
+
+    
+
+    // azimuth = compass.getAzimuth(); // Get the azimuth value
+  }
+
+  /**
+   * @brief Calculates the error in the compass readings over a specified number of samples.
+   *
+   * @param x Reference to store the calculated error for the X-axis.
+   * @param y Reference to store the calculated error for the Y-axis.
+   * @param z Reference to store the calculated error for the Z-axis.
+   * @param samples Number of samples to average for error calculation (default is 200).
+   *
+   * @details This method collects multiple readings from the compass and averages them to
+   *          determine the error in each axis. The results are stored in the provided references.
+   *          The method can be used to calibrate the compass or to understand its accuracy.
+   */
+
+  void caculateError(float &headingError, const int &samples = 400)
+  {
+    // Implement error calculation logic here if needed
+    int c = 0;
+    float ax, ay, az, head;
+
+    while (c < samples)
+    {
+      getValues(ax, ay, az);
+      float head = atan2(ay, ax);
+      headingError += (int) head; // Get the azimuth value
+      c++;
+    }
+
+    headingError /= samples; // Average the error over the number of samples
   }
 
 private:

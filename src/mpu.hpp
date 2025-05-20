@@ -7,7 +7,8 @@
 class AcceleroGyro
 {
 public:
-  void begin() noexcept { mpu.initialize(); }
+
+  AcceleroGyro() { mpu.initialize(); }
 
   bool testConnection() noexcept { return mpu.testConnection(); }
 
@@ -25,6 +26,32 @@ public:
     gx = gyrX / 131.0; // Convert to degrees per second
     gy = gyrY / 131.0; // Convert to degrees per second
     gz = gyrZ / 131.0; // Convert to degrees per second
+  }
+
+  void calculateError(float &accErrorX, float &accErrorY, float &gyrErrorX, float &gyrErrorY, float &gyrErrorZ, const int &samples = 200) {
+    // Implement error calculation logic here if needed
+    int c = 0;
+    float ax, ay, az, gx, gy, gz;
+
+    while (c < samples) {
+      getMotion(ax, ay, az, gx, gy, gz);
+
+      accErrorX += atan2(ay, sqrt(pow(ax, 2) + pow(az, 2))) * 180 / M_PI; // Convert to degrees
+      accErrorY += atan2(ax, sqrt(pow(ay, 2) + pow(az, 2))) * 180 / M_PI; // Convert to degrees
+
+      gyrErrorX += gx;
+      gyrErrorY += gy;
+      gyrErrorZ += gz;
+
+      c++;
+    }
+
+    accErrorX /= samples;
+    accErrorY /= samples;
+    
+    gyrErrorX /= samples;
+    gyrErrorY /= samples; 
+    gyrErrorZ /= samples;
   }
 
 private:
