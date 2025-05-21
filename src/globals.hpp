@@ -12,3 +12,6 @@ extern double heading;            // Shared heading
 
 extern SemaphoreHandle_t sensorGPSMutext;
 extern bool isGPSSensor;
+
+extern SemaphoreHandle_t servoMutex; // Mutex for servo control
+extern int servoAngle;             // Shared servo angle

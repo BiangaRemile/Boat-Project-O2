@@ -149,7 +149,7 @@ class JoystickController {
 }
 
 // Create a new joystick controller instance
-let joystick2 = new JoystickController("joystick", 64, 8);
+let joystick = new JoystickController("joystick", 64, 8);
 
 /* ----------------------------- */
 /* 4. SPEED AND ANGLE LOGIC      */
@@ -310,7 +310,12 @@ modeBtns.forEach(target => {
  */
 function loop() {
     requestAnimationFrame(loop); // Continuously call the loop function
-    toAngleSpeed(joystick2.value); // Process the joystick's current values
+    toAngleSpeed(joystick.value); // Process the joystick's current values
+
+    if (joystick.value.x !== 0) {
+        let message = JSON.stringify({ component: "servo", state: joystick.value.x * 10 }); // Create a message with the joystick angle
+        sendMessage(message); // Send the message via WebSocket
+    }
 }
 
 loop(); // Start the loop

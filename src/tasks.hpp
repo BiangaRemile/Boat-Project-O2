@@ -11,6 +11,45 @@
 #include "esp_wifi.h" // not esp_wifi_types.h only
 #include "esp_wifi_types.h"
 #include <heading.hpp>
+#include <ESP32Servo.h>
+
+/**
+ * @brief Function to verify sensors
+ */
+
+void verifySensorsTask(void *pvParameters)
+{
+    while (true)
+    {
+        static unsigned long lastCheck = 0;
+        if (millis() - lastCheck > 1000)
+        {
+            lastCheck = millis();
+
+            Wire.beginTransmission(0x0D); // QMC5883L
+            bool qmc5883l_ok = (Wire.endTransmission() == 0);
+
+            Wire.beginTransmission(0x68); // MPU6050
+            bool mpu6050_ok = (Wire.endTransmission() == 0);
+
+            if (!qmc5883l_ok || !mpu6050_ok)
+            {
+                digitalWrite(FAILURE_LED, HIGH); // Turn on failure LED
+                digitalWrite(WORKING_LED, LOW);  // Turn off working LED
+            }
+            else
+            {
+                digitalWrite(WORKING_LED, HIGH); // Turn on working LED
+                digitalWrite(FAILURE_LED, LOW);  // Turn off failure LED
+            }
+        }
+    }
+}
+
+/**
+ * @brief Function to create an access point, set its IP address,
+ * handle WiFi connections and limit the number of clients to one.
+ */
 
 void AccessPointTask(void *pvParameters)
 {
@@ -27,9 +66,16 @@ void AccessPointTask(void *pvParameters)
     while (true)
     {
         digitalWrite(WIFI_LED, device_connected()); // Turn on the WiFi LED
-        vTaskDelay(500 / portTICK_PERIOD_MS); // Delay for a second
+        vTaskDelay(500 / portTICK_PERIOD_MS);       // Delay for a second
     }
 }
+
+/**
+ * @brief Function to handle the web server
+ *
+ * This function creates a web server that serves a webpage and handles WebSocket connections.
+ * It sends the current GPS coordinates and heading to the connected clients.
+ */
 
 void WebServerTask(void *pvParameters)
 {
@@ -63,13 +109,17 @@ void WebServerTask(void *pvParameters)
         snprintf(headStr, sizeof(headStr), "%.2f", currentHeading);
 
         // // Use the values (e.g., send to a web client)
-        server.socket.sendData("lat", latStr);  // Send latitude to the web client
-        server.socket.sendData("lon", lonStr);  // Send longitude to the web client
+        server.socket.sendData("lat", latStr);      // Send latitude to the web client
+        server.socket.sendData("lon", lonStr);      // Send longitude to the web client
         server.socket.sendData("heading", headStr); // Send heading to the web client
         server.socket._socket.cleanupClients();     // Clean up disconnected WebSocket clients
         vTaskDelay(1000 / portTICK_PERIOD_MS);      // Delay for a second
     }
 }
+
+/**
+ * @brief Function to get the GPS data from the GPS module
+ */
 
 void GPSTask(void *pvParameters)
 {
@@ -85,13 +135,18 @@ void GPSTask(void *pvParameters)
             {
                 xSemaphoreGive(gpsMutex); // Release the mutex after getting GPS data
             }
-        } else
+        }
+        else
         {
             isGPSSensor = false; // Set the GPS sensor flag to false
         }
         vTaskDelay(100 / portTICK_PERIOD_MS); // Delay for a second
     }
 }
+
+/**
+ * @brief Function to get the heading from the QMC5883L and MPU6050 sensors
+ */
 
 void HeadingTask(void *pvParameters)
 {
@@ -118,7 +173,32 @@ void HeadingTask(void *pvParameters)
             heading = headingCal;
             xSemaphoreGive(headingMutex);
         }
-        vTaskDelay(100 / portTICK_PERIOD_MS); 
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+    }
+}
+
+/**
+ * @brief Function control the servomotor
+ */
+void ServoTask(void *pvParameters)
+{
+
+    Servo monServo;
+
+    monServo.setPeriodHertz(50);          // Fréquence PWM pour les servos (50Hz)
+    monServo.attach(servoPin, 500, 2400); // Signal min et max en microsecondes
+    // 500–2400 µs sont les largeurs d’impulsion typiques pour 0–180°
+
+    while (true)
+    {
+        // Safely read the shared servo angle variable
+        if (xSemaphoreTake(servoMutex, portMAX_DELAY) == pdTRUE)
+        {
+            monServo.write(servoAngle); // Write the servo angle
+            xSemaphoreGive(servoMutex);
+            Serial.println(servoAngle);
+        }
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
 

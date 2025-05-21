@@ -5,6 +5,7 @@
 #include <ESPAsyncWebServer.h>
 #include "pins.hpp"
 #include <ArduinoJson.h>
+#include <globals.hpp>
 
 class WebSocket
 {
@@ -23,7 +24,7 @@ public:
      * @param component The name of the component to send.
      * @param state The state of the component to send.
      */
-    void sendData(const String &component, const char* state)
+    void sendData(const String &component, const char *state)
     {
         JsonDocument doc;             // Create a JSON document
         doc["component"] = component; // Add the "component" field
@@ -95,22 +96,27 @@ private:
                 {
                     data[len] = 0;
                     auto decoded = decodeJson((char *)data);
-                    Serial.printf("[WebSocket] Text from #%u: %s => %d\n",
-                                  client->id(), decoded.first.c_str(), decoded.second);
 
-                    if (decoded.first == "led")
+                    if (decoded.first == "servo")
                     {
-                        digitalWrite(WIFI_LED, decoded.second);
+                        if (xSemaphoreTake(servoMutex, portMAX_DELAY) == pdTRUE)
+                        {
+                            servoAngle += (int) (decoded.second / 2);
+                            if (servoAngle > 180)
+                            {
+                                servoAngle = 180;
+                            }
+                            else if (servoAngle < 0)
+                            {
+                                servoAngle = 0;
+                            }
+                            xSemaphoreGive(servoMutex);
+                        }
                     }
                 }
-                else
-                {
-                    Serial.printf("[WebSocket] Binary from #%u: %u bytes\n",
-                                  client->id(), len);
-                }
             }
+            break;
         }
-        break;
 
         case WS_EVT_ERROR:
             Serial.printf("[WebSocket] Error from client #%u: %s\n",
@@ -121,7 +127,7 @@ private:
             Serial.printf("[WebSocket] Pong from client #%u\n", client->id());
             break;
         }
-    }
-};
+        }
+    };
 
 #endif // __WEBSOCKET__
