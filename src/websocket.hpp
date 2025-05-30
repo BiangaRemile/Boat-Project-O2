@@ -102,15 +102,21 @@ private:
                         if (xSemaphoreTake(servoMutex, portMAX_DELAY) == pdTRUE)
                         {
                             servoAngle += (int) (decoded.second / 2);
-                            if (servoAngle > 180)
-                            {
-                                servoAngle = 180;
-                            }
-                            else if (servoAngle < 0)
-                            {
-                                servoAngle = 0;
-                            }
+                            if (servoAngle > 180) servoAngle = 180;
+                            else if (servoAngle < 0) servoAngle = 0;
+
                             xSemaphoreGive(servoMutex);
+                        }
+                    }
+
+                    if (decoded.first == "motor") {
+                        if (xSemaphoreTake(motorMutex, portMAX_DELAY) == pdTRUE) {
+                            motorVelocity += (int) decoded.second;
+
+                            if (motorVelocity > 255) motorVelocity = 255;
+                            else if (motorVelocity < 0) motorVelocity = 0;
+
+                            xSemaphoreGive(motorMutex);
                         }
                     }
                 }

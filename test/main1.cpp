@@ -15,6 +15,9 @@ bool isGPSSensor = false;
 SemaphoreHandle_t servoMutex = NULL;
 int servoAngle = 0;
 
+SemaphoreHandle_t motorMutex = NULL;
+int motorVelocity = 0;
+
 void setup()
 {
   Serial.begin(115200);
@@ -26,9 +29,10 @@ void setup()
   headingMutex = xSemaphoreCreateMutex();
   sensorGPSMutext = xSemaphoreCreateMutex();
   servoMutex = xSemaphoreCreateMutex();
+  motorMutex = xSemaphoreCreateMutex();
 
 
-  if ((gpsMutex == NULL) || (headingMutex == NULL) || (sensorGPSMutext == NULL) || (servoMutex == NULL))
+  if ((gpsMutex == NULL) || (headingMutex == NULL) || (sensorGPSMutext == NULL) || (servoMutex == NULL) || (motorMutex == NULL))
   {
     Serial.println("Failed to create mutex!");
     digitalWrite(WORKING_LED, HIGH);
@@ -43,31 +47,15 @@ void setup()
   xTaskCreatePinnedToCore(GPSTask, "GPS", 2048, NULL, 3, NULL, 0);                 // Create GPS task
   xTaskCreatePinnedToCore(HeadingTask, "Heading", 4096, NULL, 4, NULL, 0);         // Create Heading task
 
-  xTaskCreatePinnedToCore(ServoTask, "Servo", 2048, NULL, 6, NULL, 1);             // Create Servo task
+  xTaskCreatePinnedToCore(verifySensorsTask, "Verification", 2048, NULL, 1, NULL, 1);  // Create Servo task
+  xTaskCreatePinnedToCore(ServoTask, "Servo", 2048, NULL, 6, NULL, 1);  // Create Servo task
+  xTaskCreatePinnedToCore(MotorControl, "Motor control", 2048, NULL, 6, NULL, 1); // control dc motor task
 
   // second core tasks
 }
 
 void loop()
 {
-  static unsigned long lastCheck = 0;
-  if (millis() - lastCheck > 5000)
-  {
-    lastCheck = millis();
-
-    Wire.beginTransmission(0x0D); // QMC5883L
-    bool qmc5883l_ok = (Wire.endTransmission() == 0);
-
-    Wire.beginTransmission(0x68); // MPU6050
-    bool mpu6050_ok = (Wire.endTransmission() == 0);
-
-    if (!qmc5883l_ok || !mpu6050_ok) {
-      digitalWrite(FAILURE_LED, HIGH); // Turn on failure LED
-      digitalWrite(WORKING_LED, LOW); // Turn off working LED
-    } else {
-      digitalWrite(WORKING_LED, HIGH); // Turn on working LED
-      digitalWrite(FAILURE_LED, LOW); // Turn off failure LED
-    }
-  }
+  
   
 }

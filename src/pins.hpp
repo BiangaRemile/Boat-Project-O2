@@ -12,10 +12,11 @@
 
 #define I2C_SDA 5 // SDA pin for I2C communication
 #define I2C_SCL 4 // SCL pin for I2C communication
-#define U1RXpin 17 // Pin 17 is assigned for RX1 (receive) functionality.
-#define U1TXpin 18 // Pin 16 is assigned for TX1 (receive) functionality.
+#define U1RXpin 18 // Pin 17 is assigned for RX1 (receive) functionality.
+#define U1TXpin 17 // Pin 16 is assigned for TX1 (receive) functionality.
 
 #define servoPin 38 // Pin 38 is assigned for the servo motor control signal.
+#define motorPin 37 // Pin to control motor with PWM
 
 // Close the conditional inclusion block.
 #endif

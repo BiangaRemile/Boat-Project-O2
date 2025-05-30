@@ -316,6 +316,11 @@ function loop() {
         let message = JSON.stringify({ component: "servo", state: joystick.value.x * 10 }); // Create a message with the joystick angle
         sendMessage(message); // Send the message via WebSocket
     }
+
+    if (joystick.value.y !== 0) {
+        let message = JSON.stringify({ component: "motor", state: joystick.value.y * -5 }); 
+        sendMessage(message);
+    }
 }
 
 loop(); // Start the loop

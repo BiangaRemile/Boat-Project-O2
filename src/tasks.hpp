@@ -124,21 +124,29 @@ void WebServerTask(void *pvParameters)
 void GPSTask(void *pvParameters)
 {
     // Initialize GPS
-    GPS gps(U1RXpin, U1TXpin, 9600); // RX=17, TX=18, 9600 baud
+    GPS gps(U1RXpin, U1TXpin, 19200); // RX=17, TX=18, 9600 baud
 
     while (true)
     {
+
         if (gps.getGPSData(latitude, longitude))
         {
-            isGPSSensor = true; // Set the GPS sensor flag to true
             if (xSemaphoreTake(gpsMutex, portMAX_DELAY) == pdTRUE)
             {
+                if (xSemaphoreTake(sensorGPSMutext, portMAX_DELAY) == pdTRUE)
+                {
+                    isGPSSensor = true; // Set the GPS sensor flag to true
+                }
+                else
+                {
+                    if (xSemaphoreTake(sensorGPSMutext, portMAX_DELAY) == pdTRUE)
+                    {
+
+                        isGPSSensor = false; // Set the GPS sensor flag to true
+                    }
+                }
                 xSemaphoreGive(gpsMutex); // Release the mutex after getting GPS data
             }
-        }
-        else
-        {
-            isGPSSensor = false; // Set the GPS sensor flag to false
         }
         vTaskDelay(100 / portTICK_PERIOD_MS); // Delay for a second
     }
@@ -196,8 +204,29 @@ void ServoTask(void *pvParameters)
         {
             monServo.write(servoAngle); // Write the servo angle
             xSemaphoreGive(servoMutex);
-            Serial.println(servoAngle);
         }
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+}
+
+void MotorControl(void *pvParameters)
+{
+    const int channel = 3;
+    const int frequence = 1000;
+    const int resolution = 8;
+
+    ledcSetup(channel, frequence, resolution);
+    ledcAttachPin(motorPin, channel);
+
+    while (true)
+    {
+
+        if (xSemaphoreTake(motorMutex, portMAX_DELAY) == pdTRUE)
+        {
+            ledcWrite(channel, motorVelocity);
+            xSemaphoreGive(motorMutex);
+        }
+
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }

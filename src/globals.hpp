@@ -15,3 +15,6 @@ extern bool isGPSSensor;
 
 extern SemaphoreHandle_t servoMutex; // Mutex for servo control
 extern int servoAngle;             // Shared servo angle
+
+extern SemaphoreHandle_t motorMutex;
+extern int motorVelocity;
